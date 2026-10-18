@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>作業催繳器</title>
+    <style>
+        :root {
+            --primary-color: #ff6b6b;
+            --bg-color: #f7f9fc;
+            --card-bg: #ffffff;
+            --text-color: #333333;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .container {
+            width: 100%;
+            max-width: 600px;
+            background: var(--card-bg);
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+        }
+        h1 {
+            text-align: center;
+            color: var(--primary-color);
+            margin-bottom: 5px;
+        }
+        .subtitle {
+            text-align: center;
+            color: #666;
+            font-size: 0.9rem;
+            margin-bottom: 25px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            font-size: 0.9rem;
+        }
+        input, select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            box-sizing: border-box;
+            font-size: 1rem;
+        }
+        button {
+            width: 100%;
+            padding: 12px;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        button:hover {
+            background-color: #fa5252;
+        }
+        .nag-box {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #fff3bf;
+            border-left: 5px; 
+            border-radius: 4px;
+            font-size: 0.95rem;
+            color: #e67700;
+            display: none;
+        }
+        .task-list {
+            margin-top: 25px;
+        }
+        .task-card {
+            background: #fff;
+            border: 1px solid #eee;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.02);
+        }
+        .task-info h3 {
+            margin: 0 0 5px 0;
+            font-size: 1.1rem;
+        }
+        .task-info p {
+            margin: 0;
+            color: #777;
+            font-size: 0.85rem;
+        }
+        .task-actions {
+            display: flex;
+            gap: 8px;
+        }
+        .btn-nag {
+            background-color: #fab005;
+            width: auto;
+            padding: 6px 12px;
+            font-size: 0.85rem;
+        }
+        .btn-done {
+            background-color: #40c057;
+            width: auto;
+            padding: 6px 12px;
+            font-size: 0.85rem;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>🚨 作業催繳器</h1>
+    <div class="subtitle">專為拖延症設計的智慧督促系統</div>
+
+    <!-- 新增作業表單 -->
+    <div class="form-group">
+        <label for="taskName">作業名稱</label>
+        <input type="text" id="taskName" placeholder="例如：資料結構小考複習">
+    </div>
+    <div class="form-group">
+        <label for="taskDate">截止日期</label>
+        <input type="date" id="taskDate">
+    </div>
+    <button onclick="addTask()">新增作業並開始倒數</button>
+
+    <!-- 隨機碎碎念提示框 -->
+    <div id="nagBox" class="nag-box"></div>
+
+    <!-- 任務列表 -->
+    <div class="task-list">
+        <h3>📋 目前待繳作業清單</h3>
+        <div id="taskListContainer">
+            <p style="color: #999; text-align: center;">目前沒有作業，快新增一個吧！</p>
+        </div>
+    </div>
+</div>
+
+<script>
+    const nagMessages = [
+        "「明天再說」的明天已經到了，你還在滑手機？",
+        "程式碼不會自己跑出來，快去寫作業！",
+        "助教正在瞪著你，趕快把作業交出來！",
+        "拖延是心靈的舒適圈，但會讓你的成績很痛苦。",
+        "別看了，現在立刻打開編輯器！"
+    ];
+
+    function addTask() {
+        const name = document.getElementById('taskName').value;
+        const date = document.getElementById('taskDate').value;
+        
+        if (!name || !date) {
+            alert('請完整填寫作業名稱與截止日期！');
+            return;
+        }
+
+        const container = document.getElementById('taskListContainer');
+        if (container.querySelector('p')) {
+            container.innerHTML = ''; // 清除提示文字
+        }
+
+        const card = document.createElement('div');
+        card.className = 'task-card';
+        card.innerHTML = `
+            <div class="task-info">
+                <h3>${name}</h3>
+                <p>截止日期：${date}</p>
+            </div>
+            <div class="task-actions">
+                <button class="btn-nag" onclick="showNag()">催繳碎碎念</button>
+                <button class="btn-done" onclick="removeTask(this)">完成繳交</button>
+            </div>
+        `;
+        
+        container.appendChild(card);
+
+        // 清空輸入框
+        document.getElementById('taskName').value = '';
+        document.getElementById('taskDate').value = '';
+    }
+
+    function showNag() {
+        const nagBox = document.getElementById('nagBox');
+        const randomMsg = nagMessages[Math.floor(Math.random() * nagMessages.length)];
+        nagBox.style.display = 'block';
+        nagBox.innerText = `💡 催繳提示：${randomMsg}`;
+    }
+
+    function removeTask(button) {
+        const card = button.closest('.task-card');
+        card.remove();
+        
+        const container = document.getElementById('taskListContainer');
+        if (container.children.length === 0) {
+            container.innerHTML = '<style>p{color: #999; text-align: center;}</style><p style="color: #999; text-align: center;">太棒了！目前沒有待繳作業！</p>';
+        }
+    }
+</script>
+
+</body>
+</html>
