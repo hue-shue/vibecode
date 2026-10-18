@@ -76,7 +76,7 @@
             margin-top: 20px;
             padding: 15px;
             background-color: #fff3bf;
-            border-left: 5px; 
+            border-left: 5px solid #f59f00;
             border-radius: 4px;
             font-size: 0.95rem;
             color: #e67700;
@@ -121,6 +121,10 @@
             padding: 6px 12px;
             font-size: 0.85rem;
         }
+        .empty-text {
+            color: #999;
+            text-align: center;
+        }
     </style>
 </head>
 <body>
@@ -147,7 +151,7 @@
     <div class="task-list">
         <h3>目前待繳作業清單</h3>
         <div id="taskListContainer">
-            <p style="color: #999; text-align: center;">目前沒有作業，快新增一個吧！</p>
+            <p class="empty-text">目前沒有作業，快新增一個吧！</p>
         </div>
     </div>
 </div>
@@ -162,8 +166,10 @@
     ];
 
     function addTask() {
-        const name = document.getElementById('taskName').value;
-        const date = document.getElementById('taskDate').value;
+        const nameInput = document.getElementById('taskName');
+        const dateInput = document.getElementById('taskDate');
+        const name = nameInput.value.trim();
+        const date = dateInput.value;
         
         if (!name || !date) {
             alert('請完整填寫作業名稱與截止日期！');
@@ -171,8 +177,10 @@
         }
 
         const container = document.getElementById('taskListContainer');
-        if (container.querySelector('p')) {
-            container.innerHTML = ''; // 清除提示文字
+        
+        // 如果原本包含提示文字，先清空容器
+        if (container.querySelector('.empty-text')) {
+            container.innerHTML = '';
         }
 
         const card = document.createElement('div');
@@ -191,8 +199,8 @@
         container.appendChild(card);
 
         // 清空輸入框
-        document.getElementById('taskName').value = '';
-        document.getElementById('taskDate').value = '';
+        nameInput.value = '';
+        dateInput.value = '';
     }
 
     function showNag() {
@@ -208,7 +216,7 @@
         
         const container = document.getElementById('taskListContainer');
         if (container.children.length === 0) {
-            container.innerHTML = '<style>p{color: #999; text-align: center;}</style><p style="color: #999; text-align: center;">太棒了！目前沒有待繳作業！</p>';
+            container.innerHTML = '<p class="empty-text">太棒了！目前沒有待繳作業！</p>';
         }
     }
 </script>
