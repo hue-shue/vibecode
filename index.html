@@ -49,7 +49,7 @@
             font-weight: bold;
             font-size: 0.9rem;
         }
-        input, select {
+        input {
             width: 100%;
             padding: 10px;
             border: 1px solid #ddd;
@@ -140,7 +140,7 @@
 <body>
 
 <div class="container">
-    <h1>作業催繳器</h1>
+    <h1>🚨 作業催繳器</h1>
     <div class="subtitle">專為拖延症設計的智慧督促系統</div>
 
     <!-- 新增作業表單 -->
@@ -152,14 +152,15 @@
         <label for="taskDate">截止日期</label>
         <input type="date" id="taskDate">
     </div>
-    <button onclick="addTask()">新增作業並開始倒數</button>
+    <!-- 加上 type="button" 防止觸發預設表單提交或重新整理 -->
+    <button type="button" onclick="addTask()">新增作業並開始倒數</button>
 
     <!-- 隨機碎碎念提示框 -->
     <div id="nagBox" class="nag-box"></div>
 
     <!-- 任務列表 -->
     <div class="task-list">
-        <h3>目前待繳作業清單</h3>
+        <h3>📋 目前待繳作業清單</h3>
         <div id="taskListContainer">
             <p id="emptyNotice" class="empty-text">目前沒有作業，快新增一個吧！</p>
         </div>
@@ -212,17 +213,28 @@
         const card = document.createElement('div');
         card.className = 'task-card';
         card.innerHTML = `
+            class="task-info">
+                <h3>${name} ${daysText}</h3>
+                <p>截止日期：${date}</p>
+            </div>
+            <div class="task-actions">
+                <button type="button" class="btn-nag" onclick="showNag()">催繳碎碎念</button>
+                <button type="button" class="btn-done" onclick="removeTask(this)">完成繳交</button>
+            </div>
+        `;
+        // 修正上一行 HTML 標籤開頭的小細節
+        card.innerHTML = `
             <div class="task-info">
                 <h3>${name} ${daysText}</h3>
                 <p>截止日期：${date}</p>
             </div>
             <div class="task-actions">
-                <button class="btn-nag" onclick="showNag()">催繳碎碎念</button>
-                <button class="btn-done" onclick="removeTask(this)">完成繳交</button>
+                <button type="button" class="btn-nag" onclick="showNag()">催繳碎碎念</button>
+                <button type="button" class="btn-done" onclick="removeTask(this)">完成繳交</button>
             </div>
         `;
         
-        // 追加至清單末端（保留舊資料）
+        // 使用 appendChild 確保新項目一定會加在後面，絕對不會覆蓋舊項目
         container.appendChild(card);
 
         // 清空輸入欄位
@@ -234,7 +246,7 @@
         const nagBox = document.getElementById('nagBox');
         const randomMsg = nagMessages[Math.floor(Math.random() * nagMessages.length)];
         nagBox.style.display = 'block';
-        nagBox.innerText = `催繳提示：${randomMsg}`;
+        nagBox.innerText = `💡 催繳提示：${randomMsg}`;
     }
 
     function removeTask(button) {
