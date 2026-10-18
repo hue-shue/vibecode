@@ -105,6 +105,16 @@
             color: #777;
             font-size: 0.85rem;
         }
+        .badge {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: bold;
+            margin-left: 5px;
+            color: white;
+            background-color: #e03131;
+        }
         .task-actions {
             display: flex;
             gap: 8px;
@@ -151,7 +161,7 @@
     <div class="task-list">
         <h3>目前待繳作業清單</h3>
         <div id="taskListContainer">
-            <p class="empty-text">目前沒有作業，快新增一個吧！</p>
+            <p id="emptyNotice" class="empty-text">目前沒有作業，快新增一個吧！</p>
         </div>
     </div>
 </div>
@@ -176,18 +186,34 @@
             return;
         }
 
-        const container = document.getElementById('taskListContainer');
-        
-        // 如果原本包含提示文字，先清空容器
-        if (container.querySelector('.empty-text')) {
-            container.innerHTML = '';
+        // 移除預設的「目前沒有作業」提示文字
+        const emptyNotice = document.getElementById('emptyNotice');
+        if (emptyNotice) {
+            emptyNotice.remove();
         }
 
+        // 計算倒數天數
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        const targetDate = new Date(date);
+        const diffTime = targetDate - today;
+        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+        
+        let daysText = "";
+        if (diffDays < 0) {
+            daysText = `<span class="badge" style="background-color: #868e96;">已逾期</span>`;
+        } else if (diffDays === 0) {
+            daysText = `<span class="badge">今天截止！</span>`;
+        } else {
+            daysText = `<span class="badge" style="background-color: #15aabf;">還剩 ${diffDays} 天</span>`;
+        }
+
+        const container = document.getElementById('taskListContainer');
         const card = document.createElement('div');
         card.className = 'task-card';
         card.innerHTML = `
             <div class="task-info">
-                <h3>${name}</h3>
+                <h3>${name} ${daysText}</h3>
                 <p>截止日期：${date}</p>
             </div>
             <div class="task-actions">
@@ -196,9 +222,10 @@
             </div>
         `;
         
+        // 追加至清單末端（保留舊資料）
         container.appendChild(card);
 
-        // 清空輸入框
+        // 清空輸入欄位
         nameInput.value = '';
         dateInput.value = '';
     }
@@ -216,7 +243,7 @@
         
         const container = document.getElementById('taskListContainer');
         if (container.children.length === 0) {
-            container.innerHTML = '<p class="empty-text">太棒了！目前沒有待繳作業！</p>';
+            container.innerHTML = '<p id="emptyNotice" class="empty-text">太棒了！目前沒有待繳作業！</p>';
         }
     }
 </script>
