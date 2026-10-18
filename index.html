@@ -126,7 +126,7 @@
 <body>
 
 <div class="container">
-    <h1>🚨 作業催繳器</h1>
+    <h1>作業催繳器</h1>
     <div class="subtitle">專為拖延症設計的智慧督促系統</div>
 
     <!-- 新增作業表單 -->
@@ -145,7 +145,7 @@
 
     <!-- 任務列表 -->
     <div class="task-list">
-        <h3>📋 目前待繳作業清單</h3>
+        <h3>目前待繳作業清單</h3>
         <div id="taskListContainer">
             <p style="color: #999; text-align: center;">目前沒有作業，快新增一個吧！</p>
         </div>
@@ -199,7 +199,7 @@
         const nagBox = document.getElementById('nagBox');
         const randomMsg = nagMessages[Math.floor(Math.random() * nagMessages.length)];
         nagBox.style.display = 'block';
-        nagBox.innerText = `💡 催繳提示：${randomMsg}`;
+        nagBox.innerText = `催繳提示：${randomMsg}`;
     }
 
     function removeTask(button) {
